@@ -1,0 +1,8 @@
+# Clangd
+/compile_commands.json
+/.cache
+
+# Project
+/build
+/generator
+/vg

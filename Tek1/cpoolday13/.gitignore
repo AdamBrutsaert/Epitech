@@ -1,0 +1,7 @@
+.vscode
+build-intermediates
+a.out
+libbtree.a
+main.c
+test_libbtree
+.clang-format

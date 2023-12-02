@@ -1,0 +1,14 @@
+# VSCode
+/.vscode
+
+# Clangd
+/.cache
+/compile_commands.json
+
+# Project
+/lem_in
+/build
+/coding-style-reports.log
+/TODO
+/.old
+/input

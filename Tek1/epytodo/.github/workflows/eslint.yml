@@ -1,0 +1,22 @@
+name: ESLint
+on: [push, pull_request]
+jobs:
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    container:
+      image: node:18-alpine
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Node
+        uses: actions/setup-node@v3
+
+      - name: Install eslint packages
+        run: |
+          npm install -g eslint
+          npm install --save-dev @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+      - name: Run ESLint
+        run: npm run lint

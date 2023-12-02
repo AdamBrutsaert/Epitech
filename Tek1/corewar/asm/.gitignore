@@ -1,0 +1,14 @@
+# Clangd
+/.cache
+/compile_commands.json
+
+# Project
+/asm
+/asm.provided
+/build
+/coding-style-reports.log
+/champion.s
+/champion.cor
+/champion.provided.cor
+/compare.sh
+/TODO

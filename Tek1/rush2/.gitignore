@@ -1,0 +1,8 @@
+.vscode
+lib/my/libmy.a
+include/info_param.h
+Makefile
+build
+build-intermediates
+a.out
+*.o

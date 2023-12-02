@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+
+from sys import argv
+from math import sin, pi
+
+UPPER_BOUND = 5000
+INTERVALS = 10000
+STEP = UPPER_BOUND / INTERVALS
+
+def func(n, x):
+    result = 1
+    if (x == 0):
+        return 1
+    for k in range(n + 1):
+        result *= sin(x / (2 * k + 1)) / (x / (2 * k + 1))
+    return result
+
+def print_value(method, n, value):
+    print(method)
+    print(f"I{n} = {value:.10f}")
+    print(f"diff = {abs(value - (pi / 2)):.10f}")
+
+def midpoint(n):
+    value = 0
+
+    for i in range(INTERVALS):
+        value += func(n, (2 * i + 1) * STEP / 2)
+    value *= STEP
+    print_value("Midpoint:", n, value)
+
+def trapezoidal(n):
+    value = 0
+
+    for i in range(INTERVALS):
+        value += (func(n, i * STEP) + func(n, (i + 1) * STEP))
+    value *= STEP / 2
+    print_value("Trapezoidal:", n, value)
+
+def simpson(n):
+    value = 0
+
+    for i in range(INTERVALS):
+        value += func(n, i * STEP) + 4 * func(n, (2 * i + 1) * STEP / 2) + func(n, (i + 1) * STEP)
+    value *= STEP / 6
+    print_value("Simpson:", n, value)
+
+def main():
+    if (len(argv) != 2):
+        exit(84)
+    try:
+        n = int(argv[1])
+    except:
+        exit(84)
+    if (n < 0):
+        exit(84)
+    midpoint(n)
+    print()
+    trapezoidal(n)
+    print()
+    simpson(n)
+    exit(0)
+
+if __name__ == "__main__":
+    main()

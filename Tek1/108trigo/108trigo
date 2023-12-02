@@ -1,0 +1,185 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit
+from math import sqrt
+
+ITERATIONS = 100
+
+def factorial(n):
+    if n == 0:
+        return 1
+    return n * factorial(n - 1)
+
+def matrix_power(matrix, power):
+    n = len(matrix)
+    identity = [[0] * n for i in range(n)]
+    for i in range(n):
+        identity[i][i] = 1
+
+    result = identity
+    while power > 0:
+        if power % 2 == 1:
+            result = matrix_multiply(result, matrix)
+        matrix = matrix_multiply(matrix, matrix)
+        power //= 2
+
+    return result
+
+def matrix_multiply(matrix1, matrix2):
+    n = len(matrix1)
+    m = len(matrix2)
+    p = len(matrix2[0])
+    result = [[0] * p for i in range(n)]
+
+    for i in range(n):
+        for j in range(p):
+            for k in range(m):
+                result[i][j] += matrix1[i][k] * matrix2[k][j]
+
+    return result
+
+def matrix_scale(matrix, scalar):
+    n = len(matrix)
+    m = len(matrix[0])
+    result = [[0] * m for i in range(n)]
+
+    for i in range(n):
+        for j in range(m):
+            result[i][j] = matrix[i][j] * scalar
+
+    return result
+
+def matrix_add(matrix1, matrix2):
+    n = len(matrix1)
+    m = len(matrix1[0])
+    result = [[0] * m for i in range(n)]
+
+    for i in range(n):
+        for j in range(m):
+            result[i][j] = matrix1[i][j] + matrix2[i][j]
+
+    return result
+
+def exponential(matrix):
+    n = len(matrix)
+    m = len(matrix[0])
+    result = [[0] * m for i in range(n)]
+
+    for i in range(ITERATIONS):
+        result = matrix_add(result, matrix_scale(matrix_power(matrix, i), 1 / factorial(i)))
+
+    return result
+
+def cosinus(matrix):
+    n = len(matrix)
+    m = len(matrix[0])
+    result = [[0] * m for i in range(n)]
+
+    for i in range(ITERATIONS):
+        result = matrix_add(result, matrix_scale(matrix_power(matrix, 2 * i), pow(-1, i) / factorial(2 * i)))
+
+    return result
+
+def sinus(matrix):
+    n = len(matrix)
+    m = len(matrix[0])
+    result = [[0] * m for i in range(n)]
+
+    for i in range(ITERATIONS):
+        result = matrix_add(result, matrix_scale(matrix_power(matrix, 2 * i + 1), pow(-1, i) / factorial(2 * i + 1)))
+
+    return result
+
+def hyperbolic_cosinus(matrix):
+    n = len(matrix)
+    m = len(matrix[0])
+    result = [[0] * m for i in range(n)]
+
+    for i in range(ITERATIONS):
+        result = matrix_add(result, matrix_scale(matrix_power(matrix, 2 * i), 1 / factorial(2 * i)))
+
+    return result
+
+def hyperbolic_sinus(matrix):
+    n = len(matrix)
+    m = len(matrix[0])
+    result = [[0] * m for i in range(n)]
+
+    for i in range(ITERATIONS):
+        result = matrix_add(result, matrix_scale(matrix_power(matrix, 2 * i + 1), 1 / factorial(2 * i + 1)))
+
+    return result
+
+def print_matrix(matrix):
+    n = len(matrix)
+    m = len(matrix[0])
+
+    for i in range(n):
+        for j in range(m):
+            print(f"{matrix[i][j]:.2f}", end="")
+            if j + 1 != m:
+                print("\t", end="")
+        print()
+
+def is_perfect_square(n):
+    if n == 0:
+        return True
+    root = int(sqrt(n))
+    return root * root == n
+
+def are_floats(numbers):
+    for n in numbers:
+        try:
+            n = float(n)
+        except:
+            return False
+    return True
+
+def create_matrix(numbers):
+    size = int(sqrt(len(numbers)))
+    result = [[0] * size for i in range(size)]
+
+    for i in range(size):
+        for j in range(size):
+            result[i][j] = float(numbers[i * size + j])
+
+    return result
+
+def print_help():
+    print("USAGE")
+    print("    ./108trigo fun a0 a1 a2 ...")
+    print()
+    print("DESCRIPTION")
+    print('    fun     function to be applied, among at least "EXP", "COS", "SIN", "COSH"')
+    print('            and "SINH"')
+    print('    ai      coeficients of the matrix')
+
+FUNCTIONS = {
+    "EXP": exponential,
+    "COS": cosinus,
+    "SIN": sinus,
+    "COSH": hyperbolic_cosinus,
+    "SINH": hyperbolic_sinus
+}
+
+if __name__ == "__main__":
+    if (len(argv) == 2 and argv[1] == "-h"):
+        print_help()
+        exit(0)
+
+    if (len(argv) < 3):
+        exit(84)
+
+    if (not is_perfect_square(len(argv) - 2)):
+        exit(84)
+
+    if (not are_floats(argv[2:])):
+        exit(84)
+
+    func = FUNCTIONS.get(argv[1])
+
+    if (func == None):
+        exit(84)
+
+    print_matrix(func(create_matrix(argv[2:])))
+    exit(0)

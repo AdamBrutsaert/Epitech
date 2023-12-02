@@ -1,0 +1,12 @@
+.vscode
+lib/my/libmy.a
+lib/libmy.a
+include/my.h
+include/my_opp.h
+build
+build-intermediates
+a.out
+*.o
+.clang-format
+tests_malo
+my_print_list.c

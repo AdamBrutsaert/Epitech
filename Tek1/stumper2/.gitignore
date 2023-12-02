@@ -1,0 +1,17 @@
+# VSCode
+/.vscode
+
+# Clangd
+/compile_commands.json
+/.cache
+
+# Emacs
+*~
+\#*#
+
+# Project
+/gameoflife
+/build
+/map.txt
+/script.sh
+/script.py

@@ -1,0 +1,7 @@
+.vscode
+lib/my/libmy.a
+Makefile
+build
+build-intermediates
+a.out
+*.o

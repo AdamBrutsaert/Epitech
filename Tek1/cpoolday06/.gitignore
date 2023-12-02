@@ -1,0 +1,8 @@
+.vscode
+*~
+*#*#
+main.c
+my_putchar.c
+Makefile
+build
+build-intermediates

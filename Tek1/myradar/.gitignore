@@ -1,0 +1,12 @@
+# CMake
+/build
+
+# Clangd
+/.cache
+/compile_commands.json
+
+# Radar
+/my_radar
+/script
+/TODO
+/script_generator.py

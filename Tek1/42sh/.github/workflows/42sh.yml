@@ -1,0 +1,107 @@
+name: 42sh Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  EXECUTABLES: "42sh"
+
+jobs:
+  check_coding_style:
+    name: Check Coding Style
+    runs-on: ubuntu-latest
+    needs: check_program_compilation
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Run Coding Style Checker
+        run: |
+          check.sh "$(pwd)/src" "$(pwd)"
+          has_errors=0
+          while IFS= read -r line; do
+              filename=$(echo "$line" | cut -d':' -f1)
+              line_pos=$(echo "$line" | cut -d':' -f2)
+              severity=$(echo "$line" | cut -d':' -f3 | sed -e 's/^[[:space:]]*//')
+              type=$(echo "$line" | cut -d':' -f4)
+              if [[ $severity == illegal* ]]; then
+                  continue
+              fi
+              echo "::error file=$filename,line=$line_pos,title=$severity $type::$severity: $type at $filename:$line_pos"
+              has_errors=1
+          done < coding-style-reports.log
+          if [ $has_errors -eq 1 ]; then
+              echo "There are coding style errors!"
+              exit 1
+          fi
+
+  check_program_compilation:
+    name: Check Compilation
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Make Repository
+        run: make
+        timeout-minutes: 2
+
+      - name: Clean Repository
+        run: make clean
+
+      - name: Check binaries executables
+        run: |
+          FILES=$(echo "$EXECUTABLES" | tr ',' ' '); \
+          for file in $FILES; do \
+          if ! [ -x "$file" ]; \
+          then >&2 echo "::error title=Check Binaries (file: $file) Failed::File $file doesn't exist or not executable."; \
+          exit 1; \
+          fi done
+
+  run_tester:
+    name: Run Shell Tester
+    runs-on: ubuntu-latest
+    needs: check_program_compilation
+    container:
+      image: epitechcontent/epitest-docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Make Repository
+        run: make
+        timeout-minutes: 2
+
+      - name: Compile tester binaries
+        run: |
+          gcc -o my_divzero tests/my_divzero.c
+          gcc -o my_segfault tests/my_segfault.c
+
+      - name: Clean Repository
+        run: make clean
+
+      - name: Run Tester
+        id: run_tester
+        timeout-minutes: 3
+        continue-on-error: true
+        run: ./tests/tester.sh
+
+      - name: Publish failed tests
+        if: steps.run_tester.outcome != 'success'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: /tmp/minishell_tests/**/*.out
+
+      - name: Exit on failure ?
+        if: steps.run_tester.outcome != 'success'
+        run : exit 1

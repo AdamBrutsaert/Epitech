@@ -1,0 +1,17 @@
+/*
+** EPITECH PROJECT, 2023
+** vec_pop.c
+** File description:
+** vec_pop.c
+*/
+
+#include "my/vector_impl.h"
+
+void vec_pop(vec_t *vec)
+{
+    if (vec->length == 0)
+        return;
+    if (vec->deleter)
+        (*vec->deleter)(VEC_GET(vec, void *, vec->length - 1));
+    vec->length--;
+}

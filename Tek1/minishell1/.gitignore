@@ -1,0 +1,11 @@
+# VSCode
+/.vscode
+
+# Clangd
+/compile_commands.json
+/.cache
+
+# Project
+/mysh
+/build
+/TODO

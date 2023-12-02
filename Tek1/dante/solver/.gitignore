@@ -1,0 +1,9 @@
+# Clangd
+/compile_commands.json
+/.cache
+
+# Project
+/build
+/solver
+/map.txt
+/vg

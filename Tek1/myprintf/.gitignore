@@ -1,0 +1,7 @@
+.vscode
+build-int
+libmy.a
+libmytests
+main.c
+a.out
+.clang-format

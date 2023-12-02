@@ -1,0 +1,11 @@
+# Clangd
+/.cache
+/compile_commands.json
+
+# Project
+/corewar
+/build
+/coding-style-reports.log
+/champion.s
+/champion.cor
+/TODO

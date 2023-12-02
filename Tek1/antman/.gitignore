@@ -1,0 +1,12 @@
+/compile_commands.json
+/.cache
+/TODO
+/examples
+/script.sh
+/.vscode
+/compressed
+/uncompressed
+/tmp
+/script
+/.ctmp
+/.utmp

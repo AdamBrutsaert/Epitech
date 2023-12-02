@@ -1,0 +1,13 @@
+# VSCode
+/.vscode
+
+# Clangd
+/.cache
+/compile_commands.json
+
+# Project
+/build
+/my_paint
+/TODO
+/coding-style-reports.log
+/save.jpg

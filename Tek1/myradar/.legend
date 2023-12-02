@@ -1,0 +1,39 @@
+Here is the rules to write a valid script:
+
+- There must be at least one aircraft.
+- Each and every entity must be written on a line ending with a newline.
+- Any amount of whitespace (spaces or tabs) at the beginning, between or
+  at the end of the parameters is allowed.
+- Empty lines are allowed.
+
+Here is how to define an aircraft:
+
+A [DepartureX] [DepartureY] [ArrivalX] [ArrivalY] [Speed] [Delay]
+
+Where:
+
+DepartureX    The center position in the x-axis of the aircraft at the start.
+              It must be a positive integer in the range [0; 1920].
+DepartureY    The center position in the y-axis of the aircraft at the start.
+              It must be a positive integer in the range [0; 1080].
+ArrivalX      The center position in the x-axis of the aircraft at the end.
+              It must be a positive integer in the range [0; 1920].
+ArrivalY      The center position in the y-axis of the aircraft at the end.
+              It must be a positive integer in the range [0; 1080].
+Speed         The speed of the aircraft in unit per second.
+              If you are playing the simulation in 1920x1080, an unit will be a pixel.
+              It must be a non-null positive integer fitting in a 32-bit wide representation.
+Delay         The delay before the aircraft takes off.
+              It must be a positive integer fitting in a 32-bit wide representation.
+
+Here is how to define a tower:
+
+T [PositionX] [PositionY] [Range]
+
+PositionX    The center position in the x-axis of the tower.
+             It must be a positive integer in the range [0; 1920]
+PositionY    The center Position in the y-axis of the tower.
+             It must be a positive integer in the range [0; 1080]
+Range        The range of the tower in units.
+             If you are playing the simulation in 1920x1080, an unit will be a pixel.
+             It must be a non-null positive integer fitting in a 32-bit wide representation.

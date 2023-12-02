@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  poll:
+    build: ./poll
+    ports:
+      - 5000:80
+    depends_on:
+      - redis
+    networks:
+      - poll-tier
+    restart: always
+    environment:
+      REDIS: redis
+      OPTION_A: Ansible
+      OPTION_B: Chef
+      OPTION_C: Puppet
+      OPTION_D: SaltStack
+
+  redis:
+    image: redis
+    expose:
+      - 6379
+    networks:
+      - poll-tier
+      - back-tier
+    restart: always
+    environment:
+      PORT: 6379
+
+  worker:
+    build: ./worker
+    depends_on:
+      - redis
+      - db
+    networks:
+      - back-tier
+    restart: always
+    environment:
+      REDIS: "redis"
+      DB: "db"
+
+  db:
+    image: postgres:9.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - back-tier
+      - result-tier
+    restart: always
+
+  result:
+    build: ./result
+    ports:
+      - 5001:80
+    depends_on:
+      - db
+    networks:
+      - result-tier
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+
+networks:
+  poll-tier:
+  result-tier:
+  back-tier:
+
+volumes:
+  db-data:

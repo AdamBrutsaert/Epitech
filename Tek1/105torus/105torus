@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+
+from sys import exit
+from arguments import Method, parseArguments
+from decimal import Decimal
+
+def show(x: float, precision: int) -> None:
+    print(f"x = {x:.{min(precision, abs(Decimal(x).as_tuple().exponent))}f}")
+
+def apply(a0: int, a1: int, a2: int, a3: int, a4: int, solution: float) -> float:
+    return a4 * solution ** 4 + a3 * solution ** 3 + a2 * solution ** 2 + a1 * solution + a0
+
+def apply_derivative(a1: int, a2: int, a3: int, a4: int, solution: float):
+    return 4 * a4 * solution ** 3 + 3 * a3 * solution ** 2 + 2 * a2 * solution + a1
+
+def check(a0: int, a1: int, a2: int, a3: int, a4: int, precision: int, solution: float) -> bool:
+    return abs(apply(a0, a1, a2, a3, a4, solution)) < 10 ** -precision
+
+def bisection(a0: int, a1: int, a2: int, a3: int, a4: int, precision: int) -> None:
+    minimum = 0
+    maximum = 1
+    mean = 0.5
+    iteration = 0
+
+    show(mean, precision)
+
+    while (iteration < 50 and not check(a0, a1, a2, a3, a4, precision, mean)):
+        application = apply(a0, a1, a2, a3, a4, mean)
+
+        if (apply(a0, a1, a2, a3, a4, minimum) < apply(a0, a1, a2, a3, a4, maximum)):
+            if (application > 0):
+                maximum = mean
+            else:
+                minimum = mean
+        else:
+            if (application > 0):
+                minimum = mean
+            else:
+                maximum = mean
+
+        mean = (minimum + maximum) / 2
+        show(mean, precision)
+        iteration += 1
+
+    if iteration == 50:
+        exit(84)
+
+def newton(a0: int, a1: int, a2: int, a3: int, a4: int, precision: int) -> None:
+    iteration = 0
+    x = 0.5
+
+    show(x, precision)
+    while (iteration < 50 and not check(a0, a1, a2, a3, a4, precision, x)):
+        derivative = apply_derivative(a1, a2, a3, a4, x)
+        if derivative == 0:
+            return
+        x = x - apply(a0, a1, a2, a3, a4, x) / derivative
+        show(x, precision)
+        iteration += 1
+
+    if iteration == 50:
+        exit(84)
+
+def secant(a0: int, a1: int, a2: int, a3: int, a4: int, precision: int) -> None:
+    iteration = 0
+    minimum = 0
+    maximum = 1
+    denominator = apply(a0, a1, a2, a3, a4, maximum) - apply(a0, a1, a2, a3, a4, minimum)
+    if denominator == 0:
+        return
+    x = maximum - apply(a0, a1, a2, a3, a4, maximum) * ((maximum - minimum) / denominator)
+
+    show(x, precision)
+    while (iteration < 50 and not check(a0, a1, a2, a3, a4, precision, x)):
+        minimum = maximum
+        maximum = x
+        denominator = apply(a0, a1, a2, a3, a4, maximum) - apply(a0, a1, a2, a3, a4, minimum)
+        if denominator == 0:
+            return
+        x = maximum - apply(a0, a1, a2, a3, a4, maximum) * ((maximum - minimum) / denominator)
+        show(x, precision)
+        iteration += 1
+
+    if iteration == 50:
+        exit(84)
+
+def main():
+    method, a0, a1, a2, a3, a4, precision = parseArguments()
+
+    if (method == Method.BISECTION):
+        bisection(a0, a1, a2, a3, a4, precision)
+    if (method == Method.NEWTON):
+        newton(a0, a1, a2, a3, a4, precision)
+    if (method == Method.SECANT):
+        secant(a0, a1, a2, a3, a4, precision)
+
+if (__name__ == "__main__"):
+    try:
+        main()
+    except:
+        exit(84)
+    exit(0)

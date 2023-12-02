@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+from Geometry.Point import Point
+from Geometry.Vector import Vector
+from Geometry.Line import Line
+
+from Geometry.Solid import Solid
+from Geometry.Sphere import Sphere
+from Geometry.Cylinder import Cylinder
+from Geometry.Cone import Cone
+
+from Math.Intersection import getLineSphereIntersections, getLineCylinderIntersections, getLineConeIntersections
+from Math.Infinity import Infinity
+
+from arguments import parseArguments
+
+from sys import exit
+
+def intersection(line: Line, solid: Sphere | Cylinder | Cone):
+    points: list[Point] | Infinity = []
+
+    if (isinstance(solid, Sphere)):
+        points = getLineSphereIntersections(line, solid)
+    elif (isinstance(solid, Cylinder)):
+        points = getLineCylinderIntersections(line, solid)
+    else:
+        points = getLineConeIntersections(line, solid)
+
+    print(solid)
+    print(line)
+
+    if (isinstance(points, Infinity)):
+        print("There is an infinite number of intersection points.")
+        return
+    if (len(points) == 0):
+        print("No intersection point.")
+    elif (len(points) == 1):
+        print("1 intersection point:")
+    else:
+        print(f"{len(points)} intersection points:")
+
+    for point in points:
+        print(point)
+
+def main() -> int:
+    solidType, point, vector, parameter = parseArguments()
+    line = Line(point, vector)
+
+    if (solidType == Solid.SPHERE):
+        intersection(line, Sphere(parameter))
+    elif (solidType == Solid.CYLINDER):
+        intersection(line, Cylinder(parameter))
+    else:
+        intersection(line, Cone(parameter))
+
+    return 0
+
+if __name__ == "__main__":
+    exit(main())

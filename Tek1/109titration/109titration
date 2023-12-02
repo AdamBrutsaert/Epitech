@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit
+
+def get_vol_ph(line):
+    array = line.split(";")
+
+    if len(array) != 2:
+        raise Exception()
+
+    return float(array[0]), float(array[1])
+
+def compute_first_derivative(lines):
+    values = []
+
+    for i in range(1, len(lines) - 1):
+        vol_prev, ph_prev = get_vol_ph(lines[i - 1])
+        vol, ph = get_vol_ph(lines[i])
+        vol_next, ph_next = get_vol_ph(lines[i + 1])
+
+        d1 = (ph - ph_prev) / (vol - vol_prev)
+        d2 = (ph_next - ph) / (vol_next - vol)
+
+        c1 = vol - vol_prev
+        c2 = vol_next - vol
+
+        c1 = c1 / (c1 + c2)
+        c2 = 1 - c1
+
+        values.append([vol, c2 * d1 + c1 * d2])
+
+    return values
+
+def print_first_derivative(values):
+    print("Derivative:")
+
+    maximum = values[0]
+
+    for value in values:
+        if (value[1] > maximum[1]):
+            maximum = value
+        print(f"{value[0]:.1f} ml -> {value[1]:.2f}")
+
+    print(f"\nEquivalence point at {maximum[0]:.1f} ml\n")
+
+    return maximum[0]
+
+def compute_second_derivative(values):
+    second_values = []
+
+    for i in range(1, len(values) - 1):
+        vol_prev, d1_prev = values[i - 1]
+        vol, d1 = values[i]
+        vol_next, d1_next = values[i + 1]
+
+        d2 = (d1_next - d1) / (vol_next - vol)
+        d1 = (d1 - d1_prev) / (vol - vol_prev)
+
+        c1 = vol - vol_prev
+        c2 = vol_next - vol
+
+        c1 = c1 / (c1 + c2)
+        c2 = 1 - c1
+
+        second_values.append([vol, c2 * d1 + c1 * d2])
+
+    return second_values
+
+def print_second_derivative(second_values):
+    print("Second derivative:")
+    for value in second_values:
+        print(f"{value[0]:.1f} ml -> {value[1]:.2f}")
+
+def compute_estimation(second_values, equivalence):
+    index = 0
+
+    for i in range(len(second_values)):
+        if (second_values[i][0] == equivalence):
+            index = i
+            break
+
+    before = second_values[index - 1]
+    middle = second_values[index]
+    after = second_values[index + 1]
+
+    values = []
+    iterations = int((middle[0] - before[0]) / 0.1)
+
+    for i in range(iterations + 1):
+        x = before[0] + i * 0.1
+        y = before[1] + i / iterations * (middle[1] - before[1])
+        values.append([x, y])
+
+    iterations = int((after[0] - middle[0]) / 0.1)
+    for i in range(1, iterations + 1):
+        x = middle[0] + i * 0.1
+        y = middle[1] + i / iterations * (after[1] - middle[1])
+        values.append([x, y])
+
+    print("\nSecond derivative estimated:")
+
+    inflection = values[0]
+
+    for value in values:
+        if (abs(value[1]) < abs(inflection[1])):
+            inflection = value
+        print(f"{value[0]:.1f} ml -> {value[1]:.2f}")
+
+    print(f"\nEquivalence point at {inflection[0]:.1f} ml")
+
+
+
+if __name__ == "__main__":
+    if (len(argv) != 2):
+        exit(84)
+
+    try:
+        file = open(argv[1], "r")
+        lines = file.readlines()
+        file.close()
+
+        values = compute_first_derivative(lines)
+        equivalence = print_first_derivative(values)
+
+        second_values = compute_second_derivative(values)
+        print_second_derivative(second_values)
+
+        compute_estimation(second_values, equivalence)
+
+    except:
+        exit(84)
+
+    exit(0)
