@@ -78,3 +78,69 @@
 | MyLs | | 100% | 20 | 
 | MySokoban | | 100% | 20 |
 | MyNavy | Yanis Zeghiche | 100% | 20 |
+
+# Semester 2
+
+| Module | Grade |
+|--------|-------|
+| B2 - Stumper | Acquired |
+| B2 - Introduction to DevOps | A |
+| B2 - Mathematics | A |
+| B2 - Shell Programming | A |
+| B2 - Introduction to Web Development | A |
+| B2 - Elementary Programming in C | A |
+| B2 - C Graphical Programming | B |
+
+## B2 - Stumper
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| Solo Stumper 1 | | 100% | 20 |
+| Stumper 1 | Gianni Henriques | 50% | 9 |
+| Stumper 2 | Gianni Henriques | 100% | 23 |
+
+## B2 - Introduction to DevOps
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| Popeye | | 100% | 20 |
+| Chocolatine (VF: Petit pain) | | | 37 |
+
+## B2 - Mathematics
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| 106bombyx | Yanis Zeghiche | 100% | 20 |
+| 107transfer | Yanis Zeghiche | 64% | 10.6 |
+| 108trigo | Yanis Zeghiche | 100% | 20 |
+| 109tiration | Yanis Zeghiche | 95% | 19.9 |
+| 110borwein | Yanis Zeghiche | 100% | 20 |
+
+## B2 - Shell Programming
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| Minishell1 | | 100% | 20 |
+| Minishell2 | | 98% | 37.4 |
+| 42sh | Alexandre Barberis, Adam Cavillon, Yanis Zeghiche | 74% | 1.5 |
+
+## B2 - Introduction to Web Development
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| EPyTodo | Alexandre Barberis, Thibault Longuepee | | 20 |
+
+## B2 - Elementary Programming in C
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| Dante | Yanis Zeghiche | 81% | 14 |
+| Lem-in | Anastasiia Romanova, Romaric Loevenbruck, Yanis Zeghiche | 97% | 21.7 |
+| Corewar | Alexandre Barberis, Adam Cavillon, Yanis Zeghiche | 98% | 12 |
+
+## B2 - C Graphical Programming
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| MyPaint | Yanis Zeghiche | 100% | 21 |
+| MyRPG | Alexandre Barberis, Adam Cavillon, Yanis Zeghiche | 50% | 1 |
