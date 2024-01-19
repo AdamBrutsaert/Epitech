@@ -1,0 +1,6 @@
+/coding-style-reports.log
+
+# Tests
+/test
+*.gcda
+*.gcno

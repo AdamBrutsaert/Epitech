@@ -1,0 +1,11 @@
+# Project
+/build
+/libstring.a
+/libstring_tests
+
+# Coding style
+/coding-style-reports.log
+
+# Clangd
+/.cache
+/compile_commands.json

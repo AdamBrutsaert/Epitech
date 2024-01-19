@@ -1,0 +1,20 @@
+# Project
+/int_list.h
+/list.h
+/map.h
+/queue.h
+/stack.h
+/tree.h
+/build
+/test
+/main.c
+/a.out
+/moi
+/marvin
+
+# Coding style
+/coding-style-reports.log
+
+# Clangd
+/.cache
+/compile_commands.json
