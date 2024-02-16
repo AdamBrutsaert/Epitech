@@ -6,14 +6,14 @@
 
 # Semester 1
 
-| Module | Grade |
-|--------|-------|
-| B1 - Unix & C Lab Seminar (Part I) | A |
-| B1 - Unix & C Lab Seminar (Part II) | A |
-| B1 - C Graphical Programming | A |
-| B1 - Mathematics | A |
-| B1 - Elementary Programming in C | A |
-| B1 - Unix System Programming | A |
+| Module | Code | Grade |
+|--------|------|-------|
+| B1 - Unix & C Lab Seminar (Part I) | B-CPE-100 | A |
+| B1 - Unix & C Lab Seminar (Part II) | B-CPE-101 | A |
+| B1 - C Graphical Programming | B-MUL-100 | A |
+| B1 - Mathematics | B-MAT-100 | A |
+| B1 - Elementary Programming in C | B-CPE-110 | A |
+| B1 - Unix System Programming | B-PSU-100 | A |
 
 ## B1 - Unix & C Lab Seminar (Part I)
 
@@ -75,21 +75,21 @@
 
 | Project | Made with | Percentage | Note |
 |---------|-----------|------------|------|
-| MyLs | | 100% | 20 | 
+| MyLs | | 100% | 20 |
 | MySokoban | | 100% | 20 |
 | MyNavy | Yanis Zeghiche | 100% | 20 |
 
 # Semester 2
 
-| Module | Grade |
-|--------|-------|
-| B2 - Stumper | Acquired |
-| B2 - Introduction to DevOps | A |
-| B2 - Mathematics | A |
-| B2 - Shell Programming | A |
-| B2 - Introduction to Web Development | A |
-| B2 - Elementary Programming in C | A |
-| B2 - C Graphical Programming | B |
+| Module | Code | Grade |
+|--------|------|-------|
+| B2 - Stumper | B-CPE-210 | Acquired |
+| B2 - Introduction to DevOps | B-DOP-200 | A |
+| B2 - Mathematics | B-MAT-200 | A |
+| B2 - Shell Programming | B-PSU-200 | A |
+| B2 - Introduction to Web Development | B-WEB-200 | A |
+| B2 - Elementary Programming in C | B-CPE-200 | A |
+| B2 - C Graphical Programming | B-MUL-200 | B |
 
 ## B2 - Stumper
 
