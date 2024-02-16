@@ -1,0 +1,64 @@
+env:
+  EXECUTABLE_NAME: "MyGKrellm"
+  AUTHORIZED_FUNCTIONS: ""
+  LIB_MATHS_FUNCTIONS: ""
+  LIBS_TO_CHECK: ""
+
+name: Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+  push:
+
+jobs:
+  check-files:
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ github.event.pull_request.base.ref != 'main' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check useless files
+        run: |
+          ERR=0
+          for FILE in $(find . -type f -name "*.o" -o -name "*~" -o -name "*.a" -o -name "*.gc*" -o -name "*#*#"); do
+              echo "::error file=$FILE::File $FILE is not allowed"
+              ERR=1
+          done
+          exit $ERR
+  check-cleanability:
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+    continue-on-error: ${{ github.event.pull_request.base.ref != 'main' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Check cleanability
+        run: |
+          INIT_TREE=$(tree -a --charset=ascii)
+          make all fclean
+          FINAL_TREE=$(tree -a --charset=ascii)
+          if [[ "$INIT_TREE" != "$FINAL_TREE" ]]; then
+              echo "::error::Makefile is not cleanable"
+              exit 1
+          fi
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+    needs: [check-files]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build
+        run: |
+          make all
+      - name: Check binary
+        run: |
+          if [[ ! -f "$EXECUTABLE_NAME" ]]; then
+              echo "::error file=$EXECUTABLE_NAME::Binary $EXECUTABLE_NAME not found"
+              exit 1
+          fi

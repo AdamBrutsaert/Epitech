@@ -1,0 +1,13 @@
+# Project
+/build
+/Makefile
+/main.cpp
+/a.out
+/moi
+/marvin
+/IFruitMixer.hpp
+/Hack.hpp
+
+# Clangd
+/.cache
+/compile_commands.json

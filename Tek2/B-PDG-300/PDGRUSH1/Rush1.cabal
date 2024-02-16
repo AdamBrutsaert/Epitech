@@ -1,0 +1,58 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           Rush1
+version:        0.1.0.0
+synopsis:       Rush1 of the PDG-300 module
+description:    Rush1 of the PDG-300 module
+author:         Adam Brutsaert, Yanis Zeghiche
+maintainer:     brutsaertadam@yahoo.fr, yanis.zge@icloud.com
+license:        NONE
+build-type:     Simple
+
+library
+  exposed-modules:
+      Checker
+  other-modules:
+      Paths_Rush1
+  autogen-modules:
+      Paths_Rush1
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable Rush1-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_Rush1
+  autogen-modules:
+      Paths_Rush1
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Rush1
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+test-suite Rush1-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_Rush1
+  autogen-modules:
+      Paths_Rush1
+  hs-source-dirs:
+      test
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Rush1
+    , base >=4.7 && <5
+    , hspec >=2.11 && <3
+  default-language: Haskell2010

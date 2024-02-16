@@ -1,0 +1,9 @@
+# Project
+/Makefile
+/build
+/a.out
+/main.cpp
+
+# Clangd
+/.cache
+/compile_commands.json

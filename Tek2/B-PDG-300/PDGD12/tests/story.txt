@@ -1,0 +1,4 @@
+hi
+picture:ham.txt
+nothing special
+CU

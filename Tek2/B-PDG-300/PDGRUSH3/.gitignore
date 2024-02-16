@@ -1,0 +1,13 @@
+# Project
+/MyGKrellm
+/build
+config.krell
+
+# Clangd
+/.cache
+/compile_commands.json
+
+# Yanis Mac
+/Makefile.mac
+# Vscode
+/.vscode/

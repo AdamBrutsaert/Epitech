@@ -1,0 +1,6 @@
+/.stack-work
+/build
+/pushswap_checker
+/coding-style-reports.log
+/test/coverage
+.DS_Store
