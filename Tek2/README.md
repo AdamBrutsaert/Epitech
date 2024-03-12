@@ -32,3 +32,15 @@
 | Rush 1 | Yanis Zeghiche | 100% | 33 |
 | Rush 2 | Adam Cavillon, Alexandre Barberis, Yanis Zeghiche | 100% | 34 |
 | Rush 3 | Adam Cavillon, Alexandre Barberis, Yanis Zeghiche | | 17 |
+
+# Semester 4
+
+| Module | Code | Grade |
+|--------|------|-------|
+| B4 - x86-64 Assembly | B-ASM-400 | A |
+
+## B4 - x86-64 Assembly
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| MiniLibC | | 100% | 25 |

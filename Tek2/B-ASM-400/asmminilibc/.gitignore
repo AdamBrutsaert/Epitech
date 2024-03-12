@@ -1,0 +1,7 @@
+/build
+/libasm.so
+/libasm-debug.so
+/unit_tests
+/.cache
+/compile_commands.json
+/tests-alt
