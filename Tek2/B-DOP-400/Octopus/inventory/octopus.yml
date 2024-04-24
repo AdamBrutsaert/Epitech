@@ -1,0 +1,23 @@
+all:
+  vars:
+    ansible_user: vagrant
+
+redis:
+  hosts:
+    node1:
+
+postgresql:
+  hosts:
+    node2:
+
+poll:
+  hosts:
+    node3:
+
+result:
+  hosts:
+    node4:
+
+worker:
+  hosts:
+    node5:

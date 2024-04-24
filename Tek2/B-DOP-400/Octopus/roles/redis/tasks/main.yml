@@ -1,0 +1,23 @@
+- name: Install Redis
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: redis-server
+    state: present
+
+- name: Copy Redis configuration
+  become: true
+  ansible.builtin.copy:
+    src: redis.conf
+    dest: /etc/redis/redis.conf
+    owner: redis
+    group: redis
+    mode: '0644'
+  notify: Restart Redis
+
+- name: Start and enable Redis service
+  become: true
+  ansible.builtin.systemd:
+    name: redis-server
+    enabled: true
+    state: started

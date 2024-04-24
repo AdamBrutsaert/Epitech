@@ -1,0 +1,42 @@
+- name: Upload the result application
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ playbook_dir }}/result.tar"
+    dest: /opt
+    owner: root
+    group: root
+    mode: '0755'
+  register: result_upload
+  notify: Restart result service
+
+- name: Install Node.js and NPM
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - nodejs
+      - npm
+    state: present
+
+- name: Install dependencies
+  become: true
+  community.general.npm:
+    path: /opt/result
+
+- name: Copy the systemd service file
+  become: true
+  ansible.builtin.template:
+    src: result.service.j2
+    dest: /etc/systemd/system/result.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd and result service
+
+- name: Start and enable the result service
+  become: true
+  ansible.builtin.systemd:
+    name: result
+    state: started
+    enabled: true

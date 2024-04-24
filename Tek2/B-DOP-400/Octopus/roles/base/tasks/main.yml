@@ -1,0 +1,29 @@
+- name: Create remote_tmp directory
+  ansible.builtin.file:
+    path: "{{ base_remote_tmp }}"
+    state: directory
+    mode: '0777'
+
+- name: Update the cache and OS
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+
+- name: Install essential packages
+  become: true
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ base_useful_packages }}"
+
+- name: Set timezone to 'Europe/Paris'
+  become: true
+  community.general.timezone:
+    name: Europe/Paris
+
+- name: Set 'zsh' as the root shell
+  become: true
+  ansible.builtin.user:
+    name: root
+    shell: /bin/zsh

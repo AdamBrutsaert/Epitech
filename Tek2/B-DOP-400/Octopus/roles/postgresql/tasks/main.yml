@@ -1,0 +1,89 @@
+- name: Import PostgreSQL repository key
+  become: true
+  ansible.builtin.apt_key:
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+- name: Add PostgreSQL repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main"
+    state: present
+
+- name: Install PostgreSQL 16, psql and psycopg2
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: "{{ item }}"
+    state: present
+  loop:
+    - postgresql-16
+    - postgresql-client-16
+    - python3-psycopg2
+
+- name: Start and enable PostgreSQL service
+  become: true
+  ansible.builtin.systemd:
+    name: postgresql
+    enabled: true
+    state: started
+
+- name: Create PostgreSQL database
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ postgresql_db_name }}"
+    state: present
+
+- name: Create PostgreSQL user
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    state: present
+    name: "{{ postgresql_user_name }}"
+    password: "{{ postgresql_user_password }}"
+
+- name: Make postgresql listen on all interfaces
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_set:
+    name: listen_addresses
+    value: "*"
+  notify: Restart PostgreSQL service
+
+- name: Copy pg_hba.conf file to remote host
+  become: true
+  ansible.builtin.copy:
+    src: pg_hba.conf
+    dest: /etc/postgresql/16/main/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: '0640'
+  notify: Restart PostgreSQL service
+
+- name: Copy schema.sql file to remote host
+  become: true
+  ansible.builtin.copy:
+    src: schema.sql
+    dest: /var/lib/postgresql/schema.sql
+    owner: postgres
+    group: postgres
+    mode: '0644'
+  register: schema_sql
+
+- name: Run migration
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_script:
+    db: "{{ postgresql_db_name }}"
+    path: /var/lib/postgresql/schema.sql
+  when: schema_sql.changed
+
+- name: Grant limited privileges to PostgreSQL user
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_privs:
+    db: "{{ postgresql_db_name }}"
+    roles: "{{ postgresql_user_name }}"
+    type: table
+    objs: "{{ postgresql_table_name }}"
+    privs: "{{ postgresql_table_privileges }}"

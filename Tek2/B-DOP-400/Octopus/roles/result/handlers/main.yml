@@ -1,0 +1,12 @@
+- name: Reload systemd and result service
+  become: true
+  ansible.builtin.systemd:
+    name: result
+    state: restarted
+    daemon_reload: yes
+
+- name: Restart result service
+  become: true
+  ansible.builtin.systemd:
+    name: result
+    state: restarted

@@ -1,0 +1,22 @@
+[Unit]
+Description=Worker
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment="REDIS_HOST={{ hostvars[groups['redis'][0]]['ansible_host'] | default(groups['redis'][0]) }}"
+Environment="POSTGRES_HOST={{ hostvars[groups['postgresql'][0]]['ansible_host'] | default(groups['postgresql'][0]) }}"
+Environment="POSTGRES_PORT={{ worker_postgres_port }}"
+Environment="POSTGRES_DB={{ worker_postgres_db }}"
+Environment="POSTGRES_USER={{ worker_postgres_user }}"
+Environment="POSTGRES_PASSWORD={{ worker_postgres_password }}"
+WorkingDirectory=/opt/worker
+ExecStart=java -jar /opt/worker/target/worker-jar-with-dependencies.jar
+Restart=on-failure
+RestartSec=10
+KillMode=process
+SyslogIdentifier=worker
+
+[Install]
+WantedBy=multi-user.target

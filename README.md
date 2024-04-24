@@ -53,3 +53,4 @@ WARNING: You shall not copy/paste any code from this repository, as it would be 
 | Module | Code | Grade |
 |--------|------|-------|
 | B4 - x86-64 Assembly | B-ASM-400 | A |
+| B4 - DevOps | B-DOP-400 | |

@@ -1,0 +1,71 @@
+jenkins:
+  numExecutors: 0
+  nodes:
+  - permanent:
+      labelString: "agent1"
+      launcher:
+        ssh:
+          credentialsId: "jenkins"
+          host: "agent1"
+          port: 22
+          sshHostKeyVerificationStrategy:
+            manuallyTrustedKeyVerificationStrategy:
+              requireInitialManualTrust: false
+      name: "agent1"
+      remoteFS: "/home/jenkins"
+      retentionStrategy: "always"
+
+jobs:
+  - file: "${CASC_JENKINS_CONFIG:-/var/jenkins_home}/bonus/job_dsl.groovy"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+        - usernamePassword:
+            scope: "GLOBAL"
+            id: "git-credentials"
+            description: "Git credentials to pull private repositories."
+            username: "${GIT_USERNAME}"
+            password: "${GIT_PERSONNAL_ACCESS_TOKEN}"
+        - usernamePassword:
+            scope: "GLOBAL"
+            id: "email-credentials"
+            description: "The email credentials for Extended emails"
+            password: "${SMTP_PASSWORD}"
+            username: "${SMTP_USERNAME}"
+        - basicSSHUserPrivateKey:
+            id: "jenkins"
+            privateKeySource:
+              directEntry:
+                privateKey: "${JENKINS_AGENT_PRIVATE_SSH_KEY}"
+            scope: GLOBAL
+            username: "jenkins"
+
+unclassified:
+  location:
+    adminAddress: "Pas Nao Marvin <${SMTP_USERNAME}>"
+  mailer:
+    authentication:
+      username: "${SMTP_USERNAME}"
+      password: "${SMTP_PASSWORD}"
+    charset: "UTF-8"
+    smtpHost: "${SMTP_HOST}"
+    smtpPort: "${SMTP_PORT}"
+    useSsl: "${SMTP_USE_SSL}"
+    useTls: "${SMTP_USE_TLS}"
+  email-ext:
+    adminRequiredForTemplateTesting: false
+    allowUnregisteredEnabled: true
+    charset: "UTF-8"
+    debugMode: false
+    defaultContentType: "text/plain"
+    defaultSubject: "[MY_MARVIN] $PROJECT_NAME - $BUILD_STATUS"
+    defaultTriggerIds:
+      - "hudson.plugins.emailext.plugins.trigger.AlwaysTrigger"
+    mailAccount:
+      credentialsId: "email-credentials"
+      smtpHost: "${SMTP_HOST}"
+      smtpPort: "${SMTP_PORT}"
+      useTls: "${SMTP_USE_TLS}"
+      useSsl: "${SMTP_USE_SSL}"

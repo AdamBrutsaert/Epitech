@@ -1,0 +1,9 @@
+# Project
+/.vault_pass
+/.env
+
+# VSCode
+/.vscode
+
+# Vagrant
+/.vagrant

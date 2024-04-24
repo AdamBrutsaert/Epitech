@@ -1,0 +1,29 @@
+- name: Set up the machines
+  hosts: all
+  roles:
+    - base
+
+- name: Set up the Redis
+  hosts: redis
+  roles:
+    - redis
+
+- name: Set up the database
+  hosts: postgresql
+  roles:
+    - postgresql
+
+- name: Set up poll app
+  hosts: poll
+  roles:
+    - poll
+
+- name: Set up worker app
+  hosts: worker
+  roles:
+    - worker
+
+- name: Set up result app
+  hosts: result
+  roles:
+    - result

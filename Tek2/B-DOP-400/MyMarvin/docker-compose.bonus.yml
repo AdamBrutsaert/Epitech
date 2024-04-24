@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  docker:
+    image: docker:dind
+    command: --storage-driver=overlay2
+    privileged: true
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/home/jenkins
+      - jenkins-tmp:/tmp
+    networks:
+      jenkins:
+        aliases:
+          - docker
+
+  agent1:
+    image: jenkins-agent
+    build:
+      context: .
+      dockerfile: Dockerfile.agent.bonus
+    environment:
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
+      - "JENKINS_AGENT_SSH_PUBKEY=${JENKINS_AGENT_PUBLIC_SSH_KEY}"
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/home/jenkins
+      - jenkins-tmp:/tmp
+    networks:
+      jenkins:
+
+  jenkins:
+    image: jenkins
+    build:
+      context: .
+      dockerfile: Dockerfile.bonus
+    restart: on-failure
+    env_file: .env
+    ports:
+      - 8080:8080
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-tmp:/tmp
+      - ./my_marvin.yml:${CASC_JENKINS_CONFIG:-/var/jenkins_home}/my_marvin.yml:ro
+      - ./bonus/my_marvin.yml:${CASC_JENKINS_CONFIG:-/var/jenkins_home}/bonus/my_marvin.yml:ro
+      - ./job_dsl.groovy:${CASC_JENKINS_CONFIG:-/var/jenkins_home}/job_dsl.groovy:ro
+      - ./bonus/job_dsl.groovy:${CASC_JENKINS_CONFIG:-/var/jenkins_home}/bonus/job_dsl.groovy:ro
+    networks:
+      jenkins:
+
+volumes:
+  jenkins-docker-certs:
+  jenkins-data:
+  jenkins-tmp:
+
+networks:
+  jenkins:
+    driver: bridge

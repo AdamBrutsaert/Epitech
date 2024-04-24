@@ -1,0 +1,21 @@
+[Unit]
+Description=Result
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment="POSTGRES_HOST={{ hostvars[groups['postgresql'][0]]['ansible_host'] | default(groups['postgresql'][0]) }}"
+Environment="POSTGRES_PORT={{ result_postgres_port }}"
+Environment="POSTGRES_DB={{ result_postgres_db }}"
+Environment="POSTGRES_USER={{ result_postgres_user }}"
+Environment="POSTGRES_PASSWORD={{ result_postgres_password }}"
+WorkingDirectory=/opt/result
+ExecStart=node /opt/result/server.js
+Restart=on-failure
+RestartSec=10
+KillMode=process
+SyslogIdentifier=result
+
+[Install]
+WantedBy=multi-user.target

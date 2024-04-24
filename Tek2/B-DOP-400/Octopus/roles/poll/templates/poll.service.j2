@@ -1,0 +1,17 @@
+[Unit]
+Description=Poll
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment="REDIS_HOST={{ hostvars[groups['redis'][0]]['ansible_host'] | default(groups['redis'][0]) }}"
+WorkingDirectory=/opt/poll
+ExecStart=/opt/poll/venv/bin/python3 /opt/poll/app.py
+Restart=on-failure
+RestartSec=10
+KillMode=process
+SyslogIdentifier=poll
+
+[Install]
+WantedBy=multi-user.target

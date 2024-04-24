@@ -1,0 +1,17 @@
+version: '3.9'
+
+services:
+  jenkins:
+    image: jenkins
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    container_name: my_marvin
+    ports:
+      - 8080:8080
+      - 50000:50000
+    restart: always
+    volumes:
+      - ./my_marvin.yml:${CASC_JENKINS_CONFIG:-/var/jenkins_home}/my_marvin.yml:ro
+      - ./job_dsl.groovy:${CASC_JENKINS_CONFIG:-/var/jenkins_home}/job_dsl.groovy:ro

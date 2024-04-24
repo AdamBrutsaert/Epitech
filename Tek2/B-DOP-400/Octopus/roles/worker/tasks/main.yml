@@ -1,0 +1,71 @@
+- name: Upload the worker application
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ playbook_dir }}/worker.tar"
+    dest: /opt
+    owner: root
+    group: root
+    mode: '0755'
+  register: worker_upload
+  notify: Restart worker service
+
+- name: Check if Java 21 is installed
+  ansible.builtin.shell:
+    cmd: "dpkg-query -W -f='${Status}' jdk-21 | grep -q 'install ok installed'"
+  ignore_errors: true
+  changed_when: false
+  register: java_installed
+
+- name: Download Java 21 package
+  ansible.builtin.get_url:
+    url: "https://download.oracle.com/java/21/latest/jdk-21_linux-x64_bin.deb"
+    dest: "/tmp/jdk-21_linux-x64_bin.deb"
+  when: java_installed.rc != 0
+
+- name: Install Java 21
+  become: true
+  ansible.builtin.apt:
+    deb: "/tmp/jdk-21_linux-x64_bin.deb"
+    state: present
+  when: java_installed.rc != 0
+
+- name: Install Maven
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    name: maven
+    state: present
+
+- name: Install worker dependencies
+  become: true
+  ansible.builtin.command:
+    cmd: mvn clean install
+    chdir: /opt/worker
+  notify: Restart worker service
+  when: worker_upload.changed
+
+- name: Package the worker application
+  become: true
+  ansible.builtin.command:
+    cmd: mvn package
+    chdir: /opt/worker
+  notify: Restart worker service
+  when: worker_upload.changed
+
+- name: Copy the systemd service file
+  become: true
+  ansible.builtin.template:
+    src: worker.service.j2
+    dest: /etc/systemd/system/worker.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - Reload systemd and worker service
+
+- name: Start and enable the worker service
+  become: true
+  ansible.builtin.systemd:
+    name: worker
+    state: started
+    enabled: true

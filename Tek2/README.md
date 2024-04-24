@@ -38,9 +38,17 @@
 | Module | Code | Grade |
 |--------|------|-------|
 | B4 - x86-64 Assembly | B-ASM-400 | A |
+| B4 - DevOps | B-DOP-400 | |
 
 ## B4 - x86-64 Assembly
 
 | Project | Made with | Percentage | Note |
 |---------|-----------|------------|------|
 | MiniLibC | | 100% | 25 |
+
+## B4 - DevOps
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| MyMarvin | Malo Durand | 100% | 20 |
+| Octopus | Malo Durand | | 41 |

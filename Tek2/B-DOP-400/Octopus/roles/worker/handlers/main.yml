@@ -1,0 +1,12 @@
+- name: Reload systemd and worker service
+  become: true
+  ansible.builtin.systemd:
+    name: worker
+    state: restarted
+    daemon_reload: yes
+
+- name: Restart worker service
+  become: true
+  ansible.builtin.systemd:
+    name: worker
+    state: restarted

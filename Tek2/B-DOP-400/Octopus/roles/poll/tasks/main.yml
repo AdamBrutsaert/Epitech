@@ -1,0 +1,34 @@
+- name: Upload the poll application
+  become: true
+  ansible.builtin.unarchive:
+    src: "{{ playbook_dir }}/poll.tar"
+    dest: /opt
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart poll service
+
+- name: Install requirements
+  become: true
+  ansible.builtin.pip:
+    requirements: /opt/poll/requirements.txt
+    virtualenv: /opt/poll/venv
+    virtualenv_command: python3 -m venv
+  notify: Restart poll service
+
+- name: Copy the systemd service file
+  become: true
+  ansible.builtin.template:
+    src: poll.service.j2
+    dest: /etc/systemd/system/poll.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Reload systemd and restart poll service
+
+- name: Start and enable the application service
+  become: true
+  ansible.builtin.systemd:
+    name: poll
+    state: started
+    enabled: true
