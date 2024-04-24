@@ -1,7 +1,7 @@
 # Year
 
-**Credits :**  
-**GPA :**  
+**Credits :**  29  
+**GPA :**  3.93  
 **TEPitech :** 880
 
 # Semester 3

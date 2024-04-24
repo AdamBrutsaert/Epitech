@@ -3,7 +3,8 @@
 This repository contains all the projects I have done during my studies at Epitech.  
 Feel free to use it as a source of inspiration, or to help you understand a particular subject.  
 
-WARNING: You shall not copy/paste any code from this repository, as it would be considered as cheating.
+> [!WARNING]
+> **You shall not copy/paste** any code from this repository, as it would be considered as cheating.
 
 ## Overview
 
@@ -38,8 +39,8 @@ WARNING: You shall not copy/paste any code from this repository, as it would be 
 
 ### Second Year
 
-**Credits :**  
-**GPA :**  
+**Credits :**  29  
+**GPA :**  3.93  
 **TEPitech :** 880
 
 #### Semester 3
