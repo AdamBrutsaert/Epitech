@@ -1,0 +1,35 @@
+# Projects
+/B-NWP-400_myteams.pdf
+/build
+/libmy.a
+/libmy-debug.a
+/libmy-unit_tests
+/libprotocol.a
+/libprotocol-debug.a
+/libprotocol-unit_tests
+/myteams_server
+/myteams_server-debug
+/myteams_server-unit_tests
+/myteams_cli
+/myteams_cli-debug
+/myteams_cli-unit_tests
+/coding-style-reports.log
+/TODO.txt
+/.env
+/users.myteams
+/messages.myteams
+/teams.myteams
+/team_subscriptions.myteams
+/channels.myteams
+/threads.myteams
+/replies.myteams
+
+# Clangd
+**/.cache/
+**/compile_commands.json
+
+# Valgrind
+/vgcore.*
+
+# Dev-Container
+devcontainer.json

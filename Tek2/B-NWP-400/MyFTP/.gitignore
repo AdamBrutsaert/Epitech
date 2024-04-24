@@ -1,0 +1,12 @@
+# Project
+/myftp
+/build
+/coding-style-reports.log
+/TODO.txt
+
+# Clangd
+/.cache
+/compile_commands.json
+
+# VSCode
+/.vscode

@@ -39,6 +39,7 @@
 |--------|------|-------|
 | B4 - x86-64 Assembly | B-ASM-400 | A |
 | B4 - DevOps | B-DOP-400 | |
+| B4 - Network Programming | B-NWP-400 | |
 
 ## B4 - x86-64 Assembly
 
@@ -52,3 +53,10 @@
 |---------|-----------|------------|------|
 | MyMarvin | Malo Durand | 100% | 20 |
 | Octopus | Malo Durand | | 41 |
+
+## B4 - Network Programming
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| MyFTP | | 100% | 19.8 |
+| MyTeams | Alexandre Barberis, Merlin Cyffers | 100% | 16 |
