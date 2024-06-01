@@ -1,0 +1,13 @@
+# Project
+build/
+/arcade
+/lib
+Makefile.mac
+
+# Clangd
+.cache
+compile_commands.json
+
+# Others
+/assets-others
+/lib-others

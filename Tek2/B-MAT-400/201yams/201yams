@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+
+import math
+from sys import argv, exit
+from enum import Enum
+from dataclasses import dataclass
+
+class CombinationType(Enum):
+    PAIR = 0
+    THREE_OF_A_KIND = 1
+    FOUR_OF_A_KIND = 2
+    FULL_HOUSE = 3
+    STRAIGHT = 4
+    YAMS = 5
+
+@dataclass
+class Combination:
+    type_: CombinationType
+    values: list[int]
+
+## PARSING ##
+def parse_dices(args: list[str]) -> list[int] | None:
+    dices = []
+
+    for dice in args:
+        try:
+            value = int(dice)
+            if value < 0 or value > 6:
+                return None
+            dices.append(value)
+        except ValueError:
+            return None
+
+    return dices
+
+def parse_combination(arg: str) -> Combination | None:
+    parts = arg.split("_")
+
+    if len(parts) < 2:
+        return None
+
+    try:
+        if parts[0] == "pair":
+            if len(parts) != 2:
+                return None
+            value = int(parts[1])
+            if value < 1 or value > 6:
+                return None
+            return Combination(CombinationType.PAIR, [value])
+        elif parts[0] == "three":
+            if len(parts) != 2:
+                return None
+            value = int(parts[1])
+            if value < 1 or value > 6:
+                return None
+            return Combination(CombinationType.THREE_OF_A_KIND, [value])
+        elif parts[0] == "four":
+            if len(parts) != 2:
+                return None
+            value = int(parts[1])
+            if value < 1 or value > 6:
+                return None
+            return Combination(CombinationType.FOUR_OF_A_KIND, [value])
+        elif parts[0] == "full":
+            if len(parts) != 3:
+                return None
+            value1 = int(parts[1])
+            value2 = int(parts[2])
+            if value1 < 1 or value1 > 6 or value2 < 1 or value2 > 6 or value1 == value2:
+                return None
+            return Combination(CombinationType.FULL_HOUSE, [value1, value2])
+        elif parts[0] == "straight":
+            if len(parts) != 2:
+                return None
+            value = int(parts[1])
+            if value < 5 or value > 6:
+                return None
+            return Combination(CombinationType.STRAIGHT, [value])
+        elif parts[0] == "yams":
+            if len(parts) != 2:
+                return None
+            value = int(parts[1])
+            if value < 1 or value > 6:
+                return None
+            return Combination(CombinationType.YAMS, [value])
+        else:
+            return None
+    except:
+        return None
+
+## UTILS ##
+def group_dices_by_value(dices: list[int]) -> dict[int, int]:
+    group = {}
+
+    for dice in dices:
+        group.setdefault(dice, 0)
+        group[dice] += 1
+
+    return group
+
+def count_dices_different_than(group: dict[int, int], value: int) -> int:
+    different_dices = 0
+
+    for key in group:
+        if key != value:
+            different_dices += group[key]
+
+    return different_dices
+
+def get_binomial_greater_or_equal_than(k: int, n: int) -> float:
+    p = 1 / 6
+    q = 1 - p
+    return 1 - sum([math.comb(n, i) * p ** i * q ** (n - i) for i in range(k)])
+
+## PROBABILITIES ##
+def get_pair_probability(dices: list[int], value: int) -> float:
+    group = group_dices_by_value(dices)
+
+    if value in group and group[value] >= 2:
+        return 1
+
+    needed_dices = 2 - group.get(value, 0)
+    reroll_dices = count_dices_different_than(group, value)
+
+    return get_binomial_greater_or_equal_than(needed_dices, reroll_dices)
+
+def get_three_of_a_kind_probability(dices: list[int], value: int) -> float:
+    group = group_dices_by_value(dices)
+
+    if value in group and group[value] >= 3:
+        return 1
+
+    needed_dices = 3 - group.get(value, 0)
+    reroll_dices = count_dices_different_than(group, value)
+
+    return get_binomial_greater_or_equal_than(needed_dices, reroll_dices)
+
+def get_four_of_a_kind_probability(dices: list[int], value: int) -> float:
+    group = group_dices_by_value(dices)
+
+    if value in group and group[value] >= 4:
+        return 1
+
+    needed_dices = 4 - group.get(value, 0)
+    reroll_dices = count_dices_different_than(group, value)
+
+    return get_binomial_greater_or_equal_than(needed_dices, reroll_dices)
+
+def get_yams_probability(dices: list[int], value: int) -> float:
+    group = group_dices_by_value(dices)
+
+    if value in group and group[value] >= 5:
+        return 1
+
+    needed_dices = 5 - group.get(value, 0)
+    reroll_dices = count_dices_different_than(group, value)
+
+    return get_binomial_greater_or_equal_than(needed_dices, reroll_dices)
+
+def get_full_house_probability(dices: list[int], three_of_a_kind_value: int, pair_value: int) -> float:
+    group = group_dices_by_value(dices)
+
+    if pair_value in group and three_of_a_kind_value in group \
+        and group[pair_value] >= 2 and group[three_of_a_kind_value] >= 3:
+        return 1
+
+    needed_pair_dices = max(2 - group.get(pair_value, 0), 0)
+    needed_three_of_a_kind_dices = max(3 - group.get(three_of_a_kind_value, 0), 0)
+    needed_max = max(needed_pair_dices, needed_three_of_a_kind_dices)
+    reroll_dices = needed_pair_dices + needed_three_of_a_kind_dices
+
+    return math.comb(reroll_dices, needed_max) * (1 / 6) ** reroll_dices
+
+def get_straight_probability(dices: list[int], value: int) -> float:
+    group = group_dices_by_value(dices)
+    reroll_dices = (2 not in group) \
+                 + (3 not in group) \
+                 + (4 not in group) \
+                 + (5 not in group)
+
+    if value == 5:
+        reroll_dices += 1 not in group
+    else:
+        reroll_dices += 6 not in group
+
+    return math.factorial(reroll_dices) * (1 / 6) ** (reroll_dices)
+
+## MAIN ##
+def print_help() -> None:
+    print("USAGE")
+    print("    ./201yams d1 d2 d3 d4 d5 c\n")
+    print("DESCRIPTION")
+    print("    d1      value of the first die (0 if not thrown)")
+    print("    d2      value of the second die (0 if not thrown)")
+    print("    d3      value of the third die (0 if not thrown)")
+    print("    d4      value of the fourth die (0 if not thrown)")
+    print("    d5      value of the fifth die (0 if not thrown)")
+    print("    c       expected combination")
+
+def main(dices: list[int], combination: Combination) -> None:
+    if combination.type_ == CombinationType.PAIR:
+        value = combination.values[0]
+        chances = round(get_pair_probability(dices, value), 4) * 100
+        print(f"Chances to get a {value} pair: {chances:.2f}%")
+    elif combination.type_ == CombinationType.THREE_OF_A_KIND:
+        value = combination.values[0]
+        chances = round(get_three_of_a_kind_probability(dices, value), 4) * 100
+        print(f"Chances to get a {value} three-of-a-kind: {chances:.2f}%")
+    elif combination.type_ == CombinationType.FOUR_OF_A_KIND:
+        value = combination.values[0]
+        chances = round(get_four_of_a_kind_probability(dices, value), 4) * 100
+        print(f"Chances to get a {value} four-of-a-kind: {chances:.2f}%")
+    elif combination.type_ == CombinationType.YAMS:
+        value = combination.values[0]
+        chances = round(get_yams_probability(dices, value), 4) * 100
+        print(f"Chances to get a {value} yams: {chances:.2f}%")
+    elif combination.type_ == CombinationType.FULL_HOUSE:
+        value1 = combination.values[0]
+        value2 = combination.values[1]
+        chances = round(get_full_house_probability(dices, value1, value2), 4) * 100
+        print(f"Chances to get a {value1} full of {value2}: {chances:.2f}%")
+    elif combination.type_ == CombinationType.STRAIGHT:
+        value = combination.values[0]
+        chances = round(get_straight_probability(dices, value), 4) * 100
+        print(f"Chances to get a {value} straight: {chances:.2f}%")
+
+if __name__ == "__main__":
+    if len(argv) == 2 and argv[1] == "-h":
+        print_help()
+        exit(0)
+
+    if len(argv) != 7:
+        exit(84)
+
+    dices = parse_dices(argv[1:6])
+    combination = parse_combination(argv[6])
+
+    if dices is None or combination is None:
+        exit(84)
+
+    main(dices, combination)
+    exit(0)

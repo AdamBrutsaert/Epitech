@@ -39,8 +39,8 @@ Feel free to use it as a source of inspiration, or to help you understand a part
 
 ### Second Year
 
-**Credits :**  29  
-**GPA :**  3.93  
+**Credits :** 50  
+**GPA :** 3.94  
 **TEPitech :** 880
 
 #### Semester 3
@@ -54,5 +54,7 @@ Feel free to use it as a source of inspiration, or to help you understand a part
 | Module | Code | Grade |
 |--------|------|-------|
 | B4 - x86-64 Assembly | B-ASM-400 | A |
-| B4 - DevOps | B-DOP-400 | |
-| B4 - Network Programming | B-NWP-400 | |
+| B4 - DevOps | B-DOP-400 | A |
+| B4 - Network Programming | B-NWP-400 | A |
+| B4 - Object-Oriented Programming | B-OOP-400 | A |
+| B4 - Mathematics | B-MAT-400 | A |

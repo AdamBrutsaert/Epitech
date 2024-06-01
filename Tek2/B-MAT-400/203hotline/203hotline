@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+
+from sys import exit, argv
+from math import comb, exp, factorial
+from time import time
+
+WORKING_HOURS   = 8
+WORKING_SECONDS = WORKING_HOURS * 60 * 60
+CALLS_COUNT     = 3500
+PHONES_COUNT    = 25
+
+def parse_int(arg: str) -> int | None:
+    try:
+        return int(arg)
+    except:
+        return None
+
+def parse_float(arg: str) -> float | None:
+    try:
+        return float(arg)
+    except:
+        return None
+
+def help(program: str) -> None:
+    print("USAGE")
+    print(f"    {program} [n k | d]\n")
+    print("DESCRIPTION")
+    print("    n       n value for the computation of C(n, k)")
+    print("    k       k value for the computation of C(n, k)")
+    print("    d       average duration of calls (in seconds)")
+
+def compute_probability(call_duration: float) -> float:
+    return min(1, call_duration / WORKING_SECONDS)
+
+def display_binomial(p: float):
+    count = 50
+    overload = 0
+
+    print("Binomial distribution:")
+
+    start = time()
+    values = [comb(CALLS_COUNT, i) * (p ** i) * ((1 - p) ** (CALLS_COUNT - i)) for i in range(0, count + 1)]
+    duration = (time() - start) * 1000
+
+    for i, value in enumerate(values):
+        if i <= PHONES_COUNT:
+            overload += value
+
+        print(f"{i} -> {value:.3f}", end="")
+        if i % 5 != 4 and i != count:
+            print(end="\t")
+        if i % 5 == 4 or i == count:
+            print()
+
+    overload = (1 - overload) * 100
+
+    print(f"Overload: {overload:.1f}%")
+    print(f"Computation time: {duration:.2f} ms")
+
+def display_poisson(p: float):
+    p *= CALLS_COUNT
+    count = 50
+    overload = 0
+
+    print("Poisson distribution:")
+
+    start = time()
+    values = [exp(-p) * (p ** i) / factorial(i) for i in range(0, count + 1)]
+    duration = (time() - start) * 1000
+
+    for i, value in enumerate(values):
+        if i <= PHONES_COUNT:
+            overload += value
+
+        print(f"{i} -> {value:.3f}", end="")
+        if i % 5 != 4 and i != count:
+            print(end="\t")
+        if i % 5 == 4 or i == count:
+            print()
+
+    overload = (1 - overload) * 100
+
+    print(f"Overload: {overload:.1f}%")
+    print(f"Computation time: {duration:.2f} ms")
+
+def compare_distributions(call_duration: float) -> None:
+    p = compute_probability(call_duration)
+    display_binomial(p)
+    print()
+    display_poisson(p)
+
+def compute_combinations(n: int, k: int) -> None:
+    print(f"{k}-combinations of a set of size {n}:")
+    print(comb(n, k))
+
+def main(program: str, args: list[str]) -> None:
+
+    # If any argument is help, display help
+    for arg in args:
+        if arg == "-h":
+            help(program)
+            exit(0)
+
+    # There must be one or two arguments
+    if len(args) == 0 or len(args) > 2:
+        help(program)
+        exit(84)
+
+    # If there is one argument, compare distributions
+    if len(args) == 1:
+        call_duration = parse_float(args[0])
+
+        if call_duration is None or call_duration < 0:
+            help(program)
+            exit(84)
+
+        compare_distributions(call_duration)
+
+    # Otherwise compute combinations
+    else:
+        n = parse_int(args[0])
+        k = parse_int(args[1])
+
+        if n is None or k is None or k < 0 or k > n:
+            help(program)
+            exit(84)
+
+        compute_combinations(n, k)
+
+    exit(0)
+
+if __name__ == "__main__":
+    main(argv[0], argv[1:])

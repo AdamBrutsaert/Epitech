@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit, stderr
+from parsing import parse_csv, Country
+from math import sqrt
+
+def contains_help(args: list[str]):
+    return "-h" in args
+
+def print_help(program: str):
+    print("USAGE")
+    print(f"\t{program} [code]+")
+    print()
+    print("DESCRIPTION")
+    print("\tcode\tcountry code")
+
+def aggregate_data(country_by_code: dict[str, Country], codes: list[str]) -> list[int] | None:
+    populations = []
+
+    for code in codes:
+        if (country_by_code.get(code) == None):
+            print(f"[error] country code `{code}` does not exist", file=stderr)
+            return None
+        populations.append(country_by_code[code].populations)
+
+    return [sum(p) for p in zip(*populations)]
+
+def linear_regression(
+    n: int,
+    xs: list[int] | list[float],
+    ys: list[int] | list[float]
+) -> tuple[float, float]:
+    x_sum = sum(xs)
+    y_sum = sum(ys)
+    xy_sum = sum([xs[i] * ys[i] for i in range(n)])
+    xx_sum = sum([x ** 2 for x in xs])
+
+    a = (n * xy_sum - x_sum * y_sum) / (n * xx_sum - x_sum ** 2)
+    b = (y_sum * xx_sum - x_sum * xy_sum) / (n * xx_sum - x_sum ** 2)
+
+    return a, b
+
+def print_countries(country_by_code: dict[str, Country], codes: list[str]):
+    countries = [country_by_code[code].name for code in codes]
+    countries.sort()
+    print(f"Country: {', '.join(countries)}")
+
+def print_fit1(n: int, years: list[int], populations: list[float]) -> float:
+    a, b = linear_regression(n, years, populations)
+ 
+    predicted = [a * x + b for x in years]
+    residuals_squared = [(populations[i] - predicted[i]) ** 2 for i in range(n)]
+    rmsd = sqrt(sum(residuals_squared) / n)
+    
+    projection = a * 2050 + b 
+
+    print("Fit1")
+
+    if (b < 0):
+        print(f"\tY = {a:.2f} X - {-b:.2f}")
+    else:
+        print(f"\tY = {a:.2f} X + {b:.2f}")
+
+    print(f"\tRoot-mean-square deviation: {rmsd:.2f}")
+    print(f"\tPopulation in 2050: {projection:.2f}")
+
+    return rmsd
+
+def print_fit2(n: int, years: list[int], populations: list[float]) -> float:
+    a, b = linear_regression(n, populations, years)
+
+    predicted = [(x - b) / a for x in years]
+    residuals_squared = [(populations[i] - predicted[i]) ** 2 for i in range(n)]
+    rmsd = sqrt(sum(residuals_squared) / n)
+
+    projection = (2050 - b) / a
+
+    print("Fit2")
+
+    if (b < 0):
+        print(f"\tX = {a:.2f} Y - {-b:.2f}")
+    else:
+        print(f"\tX = {a:.2f} Y + {b:.2f}")
+
+    print(f"\tRoot-mean-square deviation: {rmsd:.2f}")
+    print(f"\tPopulation in 2050: {projection:.2f}")
+
+    return rmsd
+
+def print_correlation(n: int, years: list[int], populations: list[float], rmsd1: float, rmsd2: float) -> None: 
+    a1, b1 = linear_regression(n, years, populations)
+    a2, b2 = linear_regression(n, populations, years) 
+
+    diff = [(populations[i] - (a1 * years[i] + b1)) * (populations[i] - ((years[i] - b2) / a2)) for i in range(n)]
+    
+    r = sum(diff) / (n * rmsd1 * rmsd2)
+    print(f"Correlation: {r:.4f}")
+
+def main(program: str, args: list[str]):
+    if (contains_help(args)):
+        print_help(program)
+        exit(0)
+
+    if (len(args) == 0):
+        print_help(program)
+        exit(84)
+
+    country_by_code = parse_csv("207demography_data.csv")
+
+    if (country_by_code == None):
+        print("[error] failed to parse csv!", file=stderr)
+        exit(84)
+
+    data = aggregate_data(country_by_code, args)
+
+    if (data == None):
+        print("[error] failed to aggregate data", file=stderr)
+        exit(84)
+
+    n = len(data)
+    years = list(range(1960, 1960 + n))
+    populations = [p / 1000000 for p in data] 
+
+    print_countries(country_by_code, args)
+    rmsd1 = print_fit1(n, years, populations)
+    rmsd2 = print_fit2(n, years, populations)
+    print_correlation(n, years, populations, rmsd1, rmsd2) 
+
+    exit(0)
+
+if __name__ == "__main__":
+    main(argv[0], argv[1:])

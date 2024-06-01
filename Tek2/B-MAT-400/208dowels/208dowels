@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit, stderr
+from math import comb
+
+CHI_SQURARED_FIT_VALIDITY = [99, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5, 2, 1]
+
+CHI_SQUARED_TABLE = {
+    1: [0.00, 0.02, 0.06, 0.15, 0.27, 0.45, 0.71, 1.07, 1.64, 2.71, 3.84, 5.41, 6.63],
+    2: [0.02, 0.21, 0.45, 0.71, 1.02, 1.39, 1.83, 2.41, 3.22, 4.61, 5.99, 7.82, 9.21],
+    3: [0.11, 0.58, 1.01, 1.42, 1.87, 2.37, 2.95, 3.66, 4.64, 6.25, 7.81, 9.84, 11.34],
+    4: [0.30, 1.06, 1.65, 2.19, 2.75, 3.36, 4.04, 4.88, 5.99, 7.78, 9.49, 11.67, 13.28],
+    5: [0.55, 1.61, 2.34, 3.00, 3.66, 4.35, 5.13, 6.06, 7.29, 9.24, 11.07, 13.39, 15.09],
+    6: [0.87, 2.20, 3.07, 3.83, 4.57, 5.35, 6.21, 7.23, 8.56, 10.64, 12.59, 15.03, 16.81],
+    7: [1.24, 2.83, 3.82, 4.67, 5.49, 6.35, 7.28, 8.38, 9.80, 12.02, 14.07, 16.62, 18.48],
+    8: [1.65, 3.49, 4.59, 5.53, 6.42, 7.34, 8.35, 9.52, 11.03, 13.36, 15.51, 18.17, 20.09],
+    9: [2.09, 4.17, 5.38, 6.39, 7.36, 8.34, 9.41, 10.66, 12.24, 14.68, 16.92, 19.68, 21.67],
+    10: [2.56, 4.87, 6.18, 7.27, 8.30, 9.34, 10.47, 11.78, 13.44, 15.99, 18.31, 21.16, 23.21]
+}
+
+class Dowels:
+    def __init__(self, args: list[str]):
+        self.xs = list(range(9))
+        self.oxs = args
+        self.oxs_merged = Dowels._merge_oxs(self.oxs)
+        self.p = Dowels._compute_probability(self.xs, self.oxs)
+        self.txs_merged = Dowels._compute_merged_txs(self.oxs_merged, self.p)
+        self.degrees_of_freedom = len(self.oxs_merged) - 2
+        self.chi_squared = Dowels._compute_chi_squared(self.oxs_merged, self.txs_merged)
+
+    @classmethod
+    def help(cls, program: str) -> None:
+        print("USAGE")
+        print(f"\t{program} O0 O1 O2 O3 O4 O5 O6 O7 O8")
+        print()
+        print("DESCRIPTION")
+        print("\tOi\tsize of the observed class")
+
+    @classmethod
+    def _merge_oxs(cls, ox: list[int]) -> list[list[int]]:
+        merged = [[size] for size in ox]
+
+        while True:
+            # Find the minimum that is below 10
+            min_index = None
+
+            for i, size in enumerate(merged):
+                if (sum(size) < 10):
+                    if (min_index is None or sum(size) < sum(merged[min_index])):
+                        min_index = i
+
+            # If no minimum is found, we are done
+            if (min_index is None):
+                break
+
+            # Aggregate the minimum sum in the left or right to the minimum
+            before = merged[min_index - 1] if min_index > 0 else None
+            after = merged[min_index + 1] if min_index < len(merged) - 1 else None
+
+            if (before is not None and (after is None or sum(before) <= sum(after))):
+                before.extend(merged[min_index])
+                merged.pop(min_index)
+            else:
+                merged[min_index].extend(after)
+                merged.pop(min_index + 1)
+
+        return merged
+
+    @classmethod
+    def _compute_probability(cls, xs: list[int], oxs: list[int]) -> float:
+        return sum([x * ox for x, ox in zip(xs, oxs)]) / 10000
+
+    @classmethod
+    def _compute_merged_txs(cls, oxs_merged: list[list[int]], p: float) -> list[float]:
+        txs = []
+        x = 0
+
+        for oxs in oxs_merged[:-1]:
+            tx = 0
+            for _ in oxs:
+                tx += 100 * comb(100, x) * (p ** x) * ((1 - p) ** (100 - x))
+                x += 1
+            txs.append(tx)
+
+        txs.append(100 - sum(txs))
+        return txs
+
+    @classmethod
+    def _compute_chi_squared(cls, oxs_merged: list[int], txs_merged: list[float]) -> float:
+        return sum([((sum(oxs) - tx) ** 2) / tx for oxs, tx in zip(oxs_merged, txs_merged)])
+
+    def display_x(self) -> None:
+        print("   x    ", end="|")
+
+        current = 0
+        for i in range(len(self.oxs_merged) - 1):
+            if (len(self.oxs_merged[i]) > 1):
+                print(f" {current}-{current + len(self.oxs_merged[i]) - 1}   ", end="|")
+            else:
+                print(f" {current}     ", end="|")
+            current += len(self.oxs_merged[i])
+
+        print(f" {current}+    | Total")
+
+    def display_ox(self) -> None:
+        print("  Ox    ", end="|")
+
+        for oxs in self.oxs_merged:
+            print(f" {sum(oxs)}    ", end="|")
+
+        print(f" {sum(self.oxs)}")
+
+    def display_txs(self) -> None:
+        print("  Tx    ", end="|")
+
+        for tx in self.txs_merged:
+            print(f" {tx:<6.1f}", end="|")
+
+        print(f" 100")
+
+    def display_distribution(self) -> None:
+        print(f"Distribution:           B(100, {self.p:.4f})")
+
+    def display_chi_squared(self) -> None:
+        print(f"Chi-squared:            {self.chi_squared:.3f}")
+
+    def display_degrees_of_freedom(self) -> None:
+        print(f"Degrees of freedom:     {self.degrees_of_freedom}")
+
+    def display_fit_validity(self) -> None:
+        min_index = 0
+
+        for i in range(len(CHI_SQUARED_TABLE[self.degrees_of_freedom])):
+            min_index = i
+            if (CHI_SQUARED_TABLE[self.degrees_of_freedom][i] > self.chi_squared):
+                break
+
+        if min_index == 0:
+            print("Fit validity:           P > 99%")
+        elif min_index == len(CHI_SQUARED_TABLE[self.degrees_of_freedom]) - 1:
+            print("Fit validity:           P < 1%")
+        else:
+            print(f"Fit validity:           {CHI_SQURARED_FIT_VALIDITY[min_index]}% < P < {CHI_SQURARED_FIT_VALIDITY[min_index - 1]}%")
+
+def args_contains_help(args: list[str]) -> bool:
+    return "-h" in args \
+        or "-help" in args \
+        or "--help" in args
+
+def parse_args(args: list[str]) -> list[int] | None:
+    if len(args) != 9:
+        print("Invalid number of arguments", file=stderr)
+        return None
+
+    sizes = None
+
+    try:
+        sizes = [int(arg) for arg in args]
+    except ValueError:
+        print("Invalid argument", file=stderr)
+        return None
+
+    if any(size < 0 for size in sizes):
+        print("Invalid argument", file=stderr)
+        return None
+
+    if (sum(sizes) != 100):
+        print("Sum of sizes must be 100", file=stderr)
+        return None
+
+    return sizes
+
+def main(program: str, args: list[str]) -> None:
+    if (args_contains_help(args)):
+        Dowels.help(program)
+        exit(0)
+
+    sizes = parse_args(args)
+    if (sizes is None):
+        Dowels.help(program)
+        exit(84)
+
+    dowels = Dowels(sizes)
+    dowels.display_x()
+    dowels.display_ox()
+    dowels.display_txs()
+    dowels.display_distribution()
+    dowels.display_chi_squared()
+    dowels.display_degrees_of_freedom()
+    dowels.display_fit_validity()
+
+    exit(0)
+
+if __name__ == '__main__':
+    main(argv[0], argv[1:])

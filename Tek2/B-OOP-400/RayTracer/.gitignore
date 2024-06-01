@@ -1,0 +1,16 @@
+# Project
+/build
+/raytracer
+/TODO.txt
+*.ppm
+/Makefile.mac
+
+# Clangd
+/.cache
+/compile_commands.json
+
+# VSCode
+/.vscode
+
+# Intellij
+/.idea

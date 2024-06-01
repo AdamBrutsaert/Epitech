@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+from sys import exit, argv
+from math import sqrt
+
+class Poll:
+    def __init__(self, pSize: int, sSize: int, p: float) -> None:
+        self.pSize = pSize
+        self.sSize = sSize
+        self.p = p
+        self.variance = (self.p  / 100 * (1 - self.p / 100) / self.sSize) * ((self.pSize - self.sSize) / (self.pSize - 1))
+        self.half_amplitude95 = 100 * 1.96 * sqrt(self.variance)
+        self.half_amplitude99 = 100 * 2.58 * sqrt(self.variance)
+
+    @classmethod
+    def help(cls, program: str) -> None:
+        print("USAGE")
+        print(f"\t{program} pSize sSize p")
+        print()
+        print("DESCRIPTION")
+        print("\tpSize\tsize of the population")
+        print("\tsSize\tsize of the sample (supposed to be representative)")
+        print("\tp\tpercentage of voting intentions for a specific candidate")
+
+    def display_population_size(self) -> None:
+        print(f"Population size:         {self.pSize}")
+
+    def display_sample_size(self) -> None:
+        print(f"Sample size:             {self.sSize}")
+
+    def display_voting_intentions(self) -> None:
+        print(f"Voting intentions:       {self.p:.2f}%")
+
+    def display_variance(self) -> None:
+        print(f"Variance:                {self.variance:.6f}")
+
+    def display_confidence_interval_95(self) -> None:
+        mi = max(self.p - self.half_amplitude95, 0)
+        ma = min(self.p + self.half_amplitude95, 100)
+
+        print(f"95% confidence interval: [{mi:.2f}%; {ma:.2f}%]")
+
+    def display_confidence_interval_99(self) -> None:
+        mi = max(self.p - self.half_amplitude99, 0)
+        ma = min(self.p + self.half_amplitude99, 100)
+
+        print(f"99% confidence interval: [{mi:.2f}%; {ma:.2f}%]")
+
+def contains_help(args: list[str]) -> bool:
+    return "-h" in args or "-help" in args or "--help" in args
+
+def parse_args(args: list[str]) -> Poll | None:
+    if (len(args) != 3):
+        return None
+
+    try:
+        pSize = int(args[0])
+        sSize = int(args[1])
+        p = float(args[2])
+
+        if (p < 0 or p > 100):
+            return None
+        if (pSize < 0 or sSize < 0):
+            return None
+        if (sSize > pSize):
+            return None
+
+        return Poll(pSize, sSize, p)
+    except ValueError:
+        return None
+
+def main(program: str, args: list[str]) -> None:
+    if (contains_help(args)):
+        Poll.help(program)
+        exit(0)
+
+    poll = parse_args(args)
+
+    if (poll is None):
+        Poll.help(program)
+        exit(84)
+
+    poll.display_population_size()
+    poll.display_sample_size()
+    poll.display_voting_intentions()
+    poll.display_variance()
+    poll.display_confidence_interval_95()
+    poll.display_confidence_interval_99()
+
+    exit(0)
+
+if __name__ == '__main__':
+    main(argv[0], argv[1:])

@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+
+from __future__ import annotations
+from dataclasses import dataclass
+from sys import argv, exit
+from math import sqrt
+
+@dataclass
+class Stats:
+    count: int
+    stdev: float
+    mean: float
+    rms: float
+    hmean: float
+
+    def iterate(self: Stats, value: float) -> None:
+
+        # Mean
+        mean_total = self.mean * self.count
+        mean_total += value
+        mean = mean_total / (self.count + 1)
+
+        # Root mean square
+        rms_squared_sum = self.rms ** 2 * self.count
+        rms_squared_sum += value ** 2
+        rms = sqrt(rms_squared_sum / (self.count + 1))
+
+        # Harmonic mean
+        hmean_reciprocal_sum = self.count / self.hmean
+        hmean_reciprocal_sum += 1 / value
+        hmean = (self.count + 1) / hmean_reciprocal_sum
+
+        # Standard deviation
+        stdev_squared = rms * rms - mean * mean
+        stdev = sqrt(stdev_squared)
+
+        self.count += 1
+        self.mean = mean
+        self.rms = rms
+        self.hmean = hmean
+        self.stdev = stdev
+
+    def __str__(self: Stats) -> str:
+        return f"\tNumber of values:\t{self.count}\n" \
+                f"\tStandard deviation:\t{self.stdev:.2f}\n" \
+                f"\tArithmetic mean:\t{self.mean:.2f}\n" \
+                f"\tRoot mean square:\t{self.rms:.2f}\n" \
+                f"\tHarmonic mean:\t\t{self.hmean:.2f}\n"
+
+def display_help(program: str) -> None:
+    print("USAGE")
+    print(f"\t{program} n a h sd")
+    print()
+    print("DESCRIPTION")
+    print("\tn\t\tnumber of values")
+    print("\ta\t\tarithmetic mean")
+    print("\th\t\tharmonic mean")
+    print("\tsd\t\tstandard deviation")
+
+def parse_int(value: str) -> int | None:
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+def parse_float(value: str) -> float | None:
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+def compute_rms(stdev: float, mean: float) -> float:
+    variance = stdev ** 2
+    rms_squared = variance + mean ** 2
+    return sqrt(rms_squared)
+
+def parse_args(args: list[str]) -> Stats | None:
+    if (len(args) != 4):
+        return None
+
+    count = parse_int(args[0])
+    mean = parse_float(args[1])
+    hmean = parse_float(args[2])
+    stdev = parse_float(args[3])
+
+    if (count is None or mean is None or hmean is None or stdev is None):
+        return None
+
+    if (count < 1 or mean < 0 or hmean < 0 or stdev < 0):
+        return None
+
+    return Stats(count, stdev, mean, compute_rms(stdev, mean), hmean)
+
+def main(program: str, args: list[str]) -> None:
+    if ("-h" in args):
+        display_help(program)
+        exit(0)
+
+    stats = parse_args(args)
+
+    if (stats is None):
+        display_help(program)
+        exit(84)
+
+    next_value = input("Enter next value: ")
+    while (next_value != "END"):
+        value = parse_float(next_value)
+        if (value is None):
+            exit(84)
+        stats.iterate(value)
+        print(stats)
+        next_value = input("Enter next value: ")
+
+    exit(0)
+
+if __name__ == "__main__":
+    main(argv[0], argv[1:])

@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit
+
+def parse_int(value: str) -> int | None:
+    try:
+        return int(value)
+    except:
+        return None
+
+def parse_args(args: list[str]) -> tuple[int, int] | None:
+    # We expect two arguments
+    if (len(args) != 2):
+        return None
+
+    # Parse the arguments
+    x = parse_int(args[0])
+    y = parse_int(args[1])
+
+    # Check if the arguments are valid
+    if (x is None or y is None):
+        return None
+    if (x < 50 or y < 50):
+        return None
+
+    return (x, y)
+
+def joint_law(a: int, b: int, x: int, y: int) -> float:
+    return ((a - x) * (b - y)) / ((5 * a - 150) * (5 * b - 150))
+
+def compute_probabilities(a: int, b: int) -> list[list[float]]:
+    all = []
+
+    for y in range(10, 51, 10):
+        row = []
+        for x in range(10, 51, 10):
+            row.append(joint_law(a, b, x, y))
+        all.append(row)
+
+    return all
+
+def compute_y_marginal(probs: list[list[float]]) -> list[float]:
+    return [sum(row) for row in probs]
+
+def compute_x_marginal(probs: list[list[float]]) -> list[float]:
+    return [sum(row) for row in zip(*probs)]
+
+def compute_z(probs: list[list[float]]) -> list[float]:
+    z20 = probs[0][0]
+    z30 = probs[0][1] + probs[1][0]
+    z40 = probs[0][2] + probs[1][1] + probs[2][0]
+    z50 = probs[0][3] + probs[1][2] + probs[2][1] + probs[3][0]
+    z60 = probs[0][4] + probs[1][3] + probs[2][2] + probs[3][1] + probs[4][0]
+    z70 = probs[1][4] + probs[2][3] + probs[3][2] + probs[4][1]
+    Z80 = probs[2][4] + probs[3][3] + probs[4][2]
+    Z90 = probs[3][4] + probs[4][3]
+    z100 = probs[4][4]
+    return [z20, z30, z40, z50, z60, z70, Z80, Z90, z100]
+
+def print_separator() -> None:
+    print("-" * 80)
+
+def print_x_y_table(probs: list[list[float]]) -> None:
+    print(f"        X=10    X=20    X=30    X=40    X=50    Y law")
+
+    for row, y in enumerate(range(10, 51, 10)):
+        p1 = probs[row][0]
+        p2 = probs[row][1]
+        p3 = probs[row][2]
+        p4 = probs[row][3]
+        p5 = probs[row][4]
+        pt = p1 + p2 + p3 + p4 + p5
+        print(f"Y={y}    {p1:.3f}   {p2:.3f}   {p3:.3f}   {p4:.3f}   {p5:.3f}   {pt:.3f}")
+
+    print("X law", end="")
+    prob_sum = 0
+    for column, x in enumerate(range(10, 51, 10)):
+        p1 = probs[0][column]
+        p2 = probs[1][column]
+        p3 = probs[2][column]
+        p4 = probs[3][column]
+        p5 = probs[4][column]
+        pt = p1 + p2 + p3 + p4 + p5
+        prob_sum += pt
+        print(f"   {pt:.3f}", end="")
+    print(f"   {prob_sum:.3f}")
+
+def print_z_table(zs: list[float]) -> None:
+    print("z ", end="")
+    for z in range(20, 101, 10):
+        print(f"      {z}", end="")
+    print()
+
+    print(f"p(Z=z)  {zs[0]:.3f}", end="")
+    for column in range(1, 9):
+        print(f"   {zs[column]:.3f}", end="")
+    print()
+
+def print_variance(xs: list[float], ys: list[float], zs: list[float]) -> None:
+    x_expectation = sum([(i + 1) * 10 * x for i, x in enumerate(xs)])
+    y_expectation = sum([(i + 1) * 10 * y for i, y in enumerate(ys)])
+    z_expectation = sum([(i + 2) * 10 * z for i, z in enumerate(zs)])
+
+    x_variance = sum([((i + 1) * 10) ** 2 * x for i, x in enumerate(xs)]) - x_expectation ** 2
+    y_variance = sum([((i + 1) * 10) ** 2 * y for i, y in enumerate(ys)]) - y_expectation ** 2
+    z_variance = sum([((i + 2) * 10) ** 2 * z for i, z in enumerate(zs)]) - z_expectation ** 2
+
+    print(f"expected value of X:    {x_expectation:.1f}")
+    print(f"variance of X:          {x_variance:.1f}")
+    print(f"expected value of Y:    {y_expectation:.1f}")
+    print(f"variance of Y:          {y_variance:.1f}")
+    print(f"expected value of Z:    {z_expectation:.1f}")
+    print(f"variance of Z:          {z_variance:.1f}")
+
+def print_help(program: str) -> None:
+    print("USAGE")
+    print(f"    {program} a b")
+    print("\nDESCRIPTION")
+    print("    a       constant computed from past results")
+    print("    b       constant computed from past results")
+
+def main(program: str, args: list[str]) -> None:
+    if ("-h" in args):
+        print_help(program)
+        exit(0)
+
+    args = parse_args(args)
+
+    if (args is None):
+        exit(84)
+
+    a, b = args
+
+    probs = compute_probabilities(a, b)
+    x_marginal = compute_x_marginal(probs)
+    y_marginal = compute_y_marginal(probs)
+    zs = compute_z(probs)
+
+    print_separator()
+    print_x_y_table(probs)
+    print_separator()
+    print_z_table(zs)
+    print_separator()
+    print_variance(x_marginal, y_marginal, zs)
+    print_separator()
+
+    exit(0)
+
+if __name__ == '__main__':
+    main(argv[0], argv[1:])

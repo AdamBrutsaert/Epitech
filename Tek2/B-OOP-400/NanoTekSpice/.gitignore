@@ -1,0 +1,11 @@
+# Project
+/build
+/nanotekspice
+/nanotekspice_debug
+/unit_tests
+/log.bin
+/rom.bin
+
+# Clangd
+/compile_commands.json
+/.cache

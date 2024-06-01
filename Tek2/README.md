@@ -1,7 +1,7 @@
 # Year
 
-**Credits :**  29  
-**GPA :**  3.93  
+**Credits :** 50  
+**GPA :** 3.94  
 **TEPitech :** 880
 
 # Semester 3
@@ -38,8 +38,10 @@
 | Module | Code | Grade |
 |--------|------|-------|
 | B4 - x86-64 Assembly | B-ASM-400 | A |
-| B4 - DevOps | B-DOP-400 | |
-| B4 - Network Programming | B-NWP-400 | |
+| B4 - DevOps | B-DOP-400 | A |
+| B4 - Network Programming | B-NWP-400 | A |
+| B4 - Object-Oriented Programming | B-OOP-400 | A |
+| B4 - Mathematics | B-MAT-400 | A |
 
 ## B4 - x86-64 Assembly
 
@@ -60,3 +62,25 @@
 |---------|-----------|------------|------|
 | MyFTP | | 100% | 19.8 |
 | MyTeams | Alexandre Barberis, Merlin Cyffers | 100% | 16 |
+
+## B4 - Object-Oriented Programming
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| NanoTekSpice | Yanis Zeghiche | 94% | 17.08 |
+| Arcade | Yanis Zeghiche | 100% | 20.25 |
+| RayTracer | Alexandre Barberis, Adam Cavillon, Yanis Zeghiche | | 27.5 |
+
+## B4 - Mathematics
+
+| Project | Made with | Percentage | Note |
+|---------|-----------|------------|------|
+| 201yams | Yanis Zeghiche | 100% | 20 |
+| 202unsold | Yanis Zeghiche | 97.4% | 19 |
+| 203hotline | Yanis Zeghiche | 100% | 20 |
+| 204ducks | Yanis Zeghiche | 81.3% | 14.5 |
+| 205IQ | Adam Cavillon | 95% | 18 |
+| 206neutrinos | Yanis Zeghiche | 91.7% | 18.7 |
+| 207demography | Yanis Zeghiche | 100% | 20 |
+| 208dowels | Yanis Zeghiche | 100% | 20 |
+| 209poll | Yanis Zeghiche | 96.2% | 19.2 |
